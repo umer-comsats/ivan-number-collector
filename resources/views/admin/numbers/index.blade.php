@@ -22,6 +22,7 @@
                 <tr>
                 <th>Company Name</th>
                 <th>Number</th>
+                <th>Items</th>
                 <th>Action</th>
                 </tr>
             </thead>
@@ -30,6 +31,7 @@
                 <tr>
                     <td>{{ $number->company->name }}</td>
                     <td>{{ $number->phone_number }}</td>
+                    <td>{{ (isset($number->items))? $number->items->items: '' }}</td>
                     <td>
                         <form action="{{ route('admin.numbers.destroy', $number->id) }}" method="post" style="display: inline">
                             @csrf

@@ -42,6 +42,17 @@
                     <label class="control-label col-md-3">Current Logo</label>
                     <div class="col-md-8"><img src="{{ asset('logo/'.$company->logo_path) }}" height="100" width="100" alt=""></div>
                 </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-3">Checkbox Items</label>
+                    <div class="col-md-8">
+                        <button type="button" class="btn btn-info btn-sm" onclick="addItem(this)">Add</button>
+                        <div class="items">
+                            @foreach ($company->items as $item)
+                            <input type="text" value="{{ $item->name }}" class="form-control mt-3" name="items[]" style="width: 20%">
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="tile-footer">
             <div class="row">
@@ -54,4 +65,13 @@
       </div>
     </div>
   </div>
+  
+  <script>
+    function addItem(e) {
+        e.preventDefault;
+        let elem = $('<input type="text" class="form-control mt-3" name="items[]" style="width: 20%">')
+        $(".items").append(elem);
+        elem.focus();
+    }
+  </script>
 @endsection

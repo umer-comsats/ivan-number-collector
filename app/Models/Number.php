@@ -14,4 +14,8 @@ class Number extends Model
     public function company() {
         return $this->belongsTo(Company::class);
     }
+
+    public function items() {
+        return $this->hasOne(NumberItem::class);
+    }
 }

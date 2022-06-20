@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Number;
+use App\Models\NumberItem;
 use Illuminate\Http\Request;
 
 class NumberController extends Controller
@@ -46,12 +47,32 @@ class NumberController extends Controller
             'phone_number' => 'required'
         ]);
 
-        Number::create($data);
+        $number = Number::create($data);
 
-        return response()->json([
-            'status' => 200,
-            'message' => 'Number added'
+        //check if items
+        if($number->company->items->count() > 0){
+            return view('admin.items.show', ['number_id' => $number->id, 'company' => $number->company]);
+        }else{
+            return redirect()->back()->with(['message' => 'Number added']);
+        }
+    }
+
+    public function store_item(Request $request)
+    {
+        $request->validate([
+            'number_id' => 'required'
         ]);
+
+        $items = $request->items;
+        
+        if(is_array($items)) {
+            NumberItem::create([
+                'number_id' => $request->number_id,
+                'items' => implode(", ", $items)
+            ]);
+        }
+
+        return redirect()->action([CompanyController::class, 'show'], [Number::find($request->number_id)->company->slug])->with(['message' => 'Number added']);
     }
 
     /**

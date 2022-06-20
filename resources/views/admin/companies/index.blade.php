@@ -22,6 +22,7 @@
                 <tr>
                 <th>Logo</th>
                 <th>Company Name</th>
+                <th>Items</th>
                 <th>Action</th>
                 </tr>
             </thead>
@@ -32,6 +33,11 @@
                         <img src="{{ asset("logo/$company->logo_path") }}" width="50" height="50" alt="">
                     </td>
                     <td>{{ $company->name }}</td>
+                    <td>
+                        @foreach ($company->items as $item)
+                            {{ $item->name. ", " }}
+                        @endforeach
+                    </td>
                     <td>
                         <a href="#" onclick="copyLink('{{ route('companies.show', $company->slug) }}')" class="btn btn-primary btn-sm">Copy URL</a>
                         <a href="{{ route('admin.numbers.index',['company' => $company->id]) }}" class="btn btn-warning btn-sm">View Numbers</a>

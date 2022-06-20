@@ -15,7 +15,7 @@
             height: 100vh;
         }
         .brand {
-            height: 50vh;
+            height: 40vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -83,7 +83,7 @@
     </style>
   </head>
   <body>
-    <form class="login-form d-none" id="number">
+    <form class="login-form d-none" id="number" method="POST" action="{{ route('admin.numbers.store') }}">
         @csrf
         <input type="hidden" name="company_id" value="{{ $company->id }}">
         <input class="form-control" type="text" placeholder="Enter number" name="phone_number" id="phone_number" autofocus>
@@ -139,7 +139,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         @if ($message = Session::get('message'))
-            toastr.error('{{ $message }}')
+            toastr.info('{{ $message }}')
         @endif
         $(".col-4").click(e => {
             let value = $(e.target).text();
@@ -158,20 +158,11 @@
                     $(".number-display").text("Enter Number");
                     document.getElementById("phone_number").value = "";
                 }else{
-                    $.ajax({
-                    url: '{{ route('admin.numbers.store') }}',
-                    type: "POST",
-                    data: $("#number").serialize(),
-                    success: function(data) {
-                        toastr.success(data.message);
-                        $(".number-display").text("Enter Number");
-                        document.getElementById("phone_number").value = "";
-                    },
-                    error: function(data) {
-                        toastr.error(data.responseJSON.message)
+                    if($("#phone_number").val() !== ""){
+                        $("#number").submit();
+                    }else{
+                        toastr.error("Empty number");
                     }
-
-                });
                 }
             }
         })

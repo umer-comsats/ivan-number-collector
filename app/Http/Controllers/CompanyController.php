@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
+use App\Models\Item;
 use App\Models\Number;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -48,6 +49,7 @@ class CompanyController extends Controller
         $input['name'] = $request->name;
         $input['action_line'] = $request->action_line;
         $input['slug'] = Str::slug( $request->name);
+        $items = $request->items;
 
         if ($image = $request->file('logo')) {
             $destinationPath = public_path('logo/');
@@ -56,7 +58,17 @@ class CompanyController extends Controller
             $input['logo_path'] = "$profileImage";
         }
 
-        Company::create($input);
+        $company = Company::create($input);
+
+        if (is_array($items) || is_object($items)){
+            foreach ($items as $item) {
+                Item::create([
+                    'company_id' => $company->id,
+                    'name' => $item
+                ]);
+            }
+        }
+        
 
         return redirect()->route('admin.companies.index')->with('message', 'Company created.');
     }
@@ -102,6 +114,7 @@ class CompanyController extends Controller
         $input['name'] = $request->name;
         $input['action_line'] = $request->action_line;
         $input['slug'] = Str::slug( $request->name);
+        $items = $request->items;
 
         if ($image = $request->file('logo')) {
             unlink(public_path("logo/$company->logo_path"));
@@ -112,6 +125,19 @@ class CompanyController extends Controller
         }
 
         $company->update($input);
+
+        $company->items()->delete();
+
+        if (is_array($items) || is_object($items)){
+            foreach ($items as $item) {
+                if(!empty($item)) {
+                    Item::create([
+                        'company_id' => $company->id,
+                        'name' => $item
+                    ]);
+                }
+            }
+        }
 
         return redirect()->route('admin.companies.index')->with('message', 'Company updated.');
     }
@@ -124,7 +150,7 @@ class CompanyController extends Controller
      */
     public function destroy(Company $company)
     {
-        if (File::exists(public_path("logo/$company->logo_path"))) {
+        if ($company->logo_path && File::exists(public_path("logo/$company->logo_path"))) {
             unlink(public_path("logo/$company->logo_path"));
         }
 
